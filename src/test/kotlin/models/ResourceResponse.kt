@@ -15,6 +15,12 @@ data class ResourceResponse(
     @JsonProperty("type")
     val type: String,
 
+    @JsonProperty("public_key")
+    val publicKey: String? = null,
+
+    @JsonProperty("public_url")
+    val publicUrl: String? = null,
+
     @JsonProperty("created")
     val created: String? = null,
 

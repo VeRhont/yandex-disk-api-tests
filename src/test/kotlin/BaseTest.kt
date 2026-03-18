@@ -16,6 +16,7 @@ open class BaseTest {
     protected val uploadApi = UploadApi(client)
     protected val downloadApi = DownloadApi(client)
     protected val trashApi = TrashApi(client)
+    protected val publicApi = PublicApi(client)
 
     protected fun registerForCleanup(path: String) {
         resourcesToCleanup.add(path)
@@ -30,6 +31,7 @@ open class BaseTest {
                 println("Failed to cleanup resource: $it")
             }
         }
+        trashApi.deleteTrash()
         resourcesToCleanup.clear()
     }
 
