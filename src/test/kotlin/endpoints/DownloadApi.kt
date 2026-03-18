@@ -1,6 +1,6 @@
 package endpoints
 
-import ApiClient
+import client.ApiClient
 import io.restassured.response.Response
 
 class DownloadApi(private val client: ApiClient) {

@@ -1,23 +1,27 @@
 package endpoints
 
-import ApiClient
+import client.ApiClient
 import io.restassured.response.Response
 
 class ResourcesApi(private val client: ApiClient) {
 
     fun getResource(path: String): Response {
-        return client.get("/resources?path=$path")
+        return client.get("$BASE_URL?path=$path")
     }
 
     fun createFolder(path: String): Response {
-        return client.put("/resources?path=$path")
+        return client.put("$BASE_URL?path=$path")
     }
 
     fun deleteResource(path: String): Response {
-        return client.delete("/resources?path=$path")
+        return client.delete("$BASE_URL?path=$path")
     }
 
     fun moveResource(from: String, to: String): Response {
-        return client.post("/resources/move?from=$from&path=$to")
+        return client.post("$BASE_URL/move?from=$from&path=$to")
+    }
+
+    private companion object {
+        private const val BASE_URL = "/resources"
     }
 }

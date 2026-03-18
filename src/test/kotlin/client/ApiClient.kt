@@ -1,6 +1,9 @@
+package client
+
 import config.TestConfig
 import io.restassured.RestAssured
 import io.restassured.response.Response
+import io.restassured.specification.RequestSpecification
 
 class ApiClient {
 
@@ -8,49 +11,37 @@ class ApiClient {
         RestAssured.baseURI = TestConfig.BASE_URL
     }
 
-    private fun request() =
+    private fun baseRequest(): RequestSpecification =
         RestAssured
             .given()
             .header("Authorization", "OAuth ${TestConfig.TOKEN}")
             .log().all()
 
     fun get(path: String): Response =
-        request()
-            .get(path)
-            .then()
-            .log().all()
-            .extract()
-            .response()
-
-    fun post(path: String): Response =
-        request()
-            .post(path)
-            .then()
-            .log().all()
-            .extract()
-            .response()
-
-    fun put(path: String): Response =
-        request()
-            .put(path)
-            .then()
-            .log().all()
-            .extract()
-            .response()
+        baseRequest().get(path).log()
 
     fun delete(path: String): Response =
-        request()
-            .delete(path)
-            .then()
-            .log().all()
-            .extract()
-            .response()
+        baseRequest().delete(path).log()
 
-    fun patch(path: String): Response =
-        request()
-            .patch(path)
-            .then()
-            .log().all()
-            .extract()
-            .response()
+    fun post(path: String, body: Any? = null): Response {
+        val request = baseRequest()
+        if (body != null) request.body(body)
+        return request.post(path).log()
+    }
+
+    fun put(path: String, body: Any? = null): Response {
+        val request = baseRequest()
+        if (body != null) request.body(body)
+        return request.put(path).log()
+    }
+
+    fun patch(path: String, body: Any? = null): Response {
+        val request = baseRequest()
+        if (body != null) request.body(body)
+        return request.patch(path).log()
+    }
+
+    private fun Response.log() = this.also {
+        this.then().log().all()
+    }
 }

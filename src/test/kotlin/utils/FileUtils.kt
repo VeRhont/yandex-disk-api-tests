@@ -1,13 +1,14 @@
-package utils
+@file:Suppress("DEPRECATION")
 
-import java.io.File
+package utils
 
 object FileUtils {
 
-    fun createTempFile(content: String): File {
-        val file = File.createTempFile("test", ".txt").apply {
+    private const val PREFIX = "test"
+    private const val SUFFIX = ".txt"
+
+    fun createTempFile(content: String) =
+        createTempFile(PREFIX, SUFFIX).apply {
             writeText(content)
         }
-        return file
-    }
 }
