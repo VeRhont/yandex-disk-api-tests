@@ -15,7 +15,8 @@ class DiskInfoTests : BaseTest() {
 
     @Test
     fun `should validate disk space consistency`() {
-        val disk = diskApi.getDiskInfo().`as`(DiskInfoResponse::class.java)
+        val response = diskApi.getDiskInfo()
+        val disk = response.`as`(DiskInfoResponse::class.java)
 
         assertThat(disk.usedSpace).isLessThanOrEqualTo(disk.totalSpace)
         assertThat(disk.trashSize).isLessThanOrEqualTo(disk.usedSpace)

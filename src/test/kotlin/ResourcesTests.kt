@@ -6,6 +6,27 @@ import utils.TestDataFactory
 class ResourcesTests : BaseTest() {
 
     @Test
+    fun `should get file metadata`() {
+        val path = createRandomFile()
+
+        val resource = getResource(path)
+
+        assertThat(resource.type).isEqualTo("file")
+        assertThat(resource.name).isEqualTo(path.substringAfterLast("/"))
+        assertThat(resource.size).isGreaterThan(0)
+    }
+
+    @Test
+    fun `should delete file`() {
+        val path = createRandomFile()
+
+        deleteResource(path)
+
+        val response = resourcesApi.getResource(path)
+        assertThat(response.statusCode).isEqualTo(404)
+    }
+
+    @Test
     fun `should create folder and get its metadata`() {
         val folder = "/${TestDataFactory.getRandomFolderName()}"
 
@@ -24,7 +45,7 @@ class ResourcesTests : BaseTest() {
         val folder = "/${TestDataFactory.getRandomFolderName()}"
 
         createFolder(folder)
-        deleteFolder(folder)
+        deleteResource(folder)
 
         val response = resourcesApi.getResource(folder)
         assertThat(response.statusCode).isEqualTo(404)
@@ -62,7 +83,7 @@ class ResourcesTests : BaseTest() {
         return response.`as`(ResourceResponse::class.java)
     }
 
-    private fun deleteFolder(path: String) {
+    private fun deleteResource(path: String) {
         val response = resourcesApi.deleteResource(path)
         assertThat(response.statusCode).isIn(202, 204)
     }

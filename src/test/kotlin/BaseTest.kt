@@ -1,9 +1,10 @@
 import client.ApiClient
-import endpoints.DiskApi
-import endpoints.DownloadApi
-import endpoints.ResourcesApi
-import endpoints.UploadApi
+import endpoints.*
+import io.restassured.RestAssured
+import models.UploadLinkResponse
 import org.junit.jupiter.api.AfterEach
+import utils.FileUtils
+import utils.TestDataFactory
 
 open class BaseTest {
 
@@ -14,6 +15,7 @@ open class BaseTest {
     protected val resourcesApi = ResourcesApi(client)
     protected val uploadApi = UploadApi(client)
     protected val downloadApi = DownloadApi(client)
+    protected val trashApi = TrashApi(client)
 
     protected fun registerForCleanup(path: String) {
         resourcesToCleanup.add(path)
@@ -29,5 +31,26 @@ open class BaseTest {
             }
         }
         resourcesToCleanup.clear()
+    }
+
+    private fun createFile(path: String): String {
+        val file = FileUtils.createTempFile("test content")
+
+        val uploadLink = uploadApi.getUploadLink(path)
+            .`as`(UploadLinkResponse::class.java)
+
+        RestAssured
+            .given()
+            .body(file)
+            .put(uploadLink.href)
+
+        registerForCleanup(path)
+
+        return path
+    }
+
+    protected fun createRandomFile(): String {
+        val path = "/${TestDataFactory.getRandomFileName()}"
+        return createFile(path)
     }
 }

@@ -13,10 +13,7 @@ class UploadTests : BaseTest() {
     fun `should get upload link`() {
         val path = "/${TestDataFactory.getRandomFileName()}"
 
-        val response = uploadApi.getUploadLink(path)
-        assertThat(response.statusCode).isEqualTo(200)
-
-        val link = response.`as`(UploadLinkResponse::class.java)
+        val link = getUploadLink(path)
 
         assertThat(link.href).isNotBlank
         assertThat(link.method).isEqualTo("PUT")
@@ -83,6 +80,22 @@ class UploadTests : BaseTest() {
         assertThat(resource.name).isEqualTo(fileName)
         assertThat(resource.type).isEqualTo("file")
         assertThat(resource.size).isGreaterThan(0)
+    }
+
+    @Test
+    fun `should not overwrite file when overwrite is false`() {
+        val fileName = TestDataFactory.getRandomFileName()
+        val path = "/$fileName"
+
+        val file1 = FileUtils.createTempFile("first version")
+
+        registerForCleanup(path)
+
+        val link1 = getUploadLink(path, overwrite = true)
+        uploadFile(file1, link1.href)
+
+        val response = uploadApi.getUploadLink(path, overwrite = false)
+        assertThat(response.statusCode).isEqualTo(409)
     }
 
     private fun getUploadLink(path: String, overwrite: Boolean = false): UploadLinkResponse {
